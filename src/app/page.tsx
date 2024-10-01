@@ -1,101 +1,153 @@
+"use client";
 import Image from "next/image";
+import Navbar from "./components/Navbar";
+import { useQuery } from "react-query";
+import axios from "axios";
+import { format, parseISO } from "date-fns"; // Import format from date-fns
+import Container from "./components/container";
+import { convertKelvinToCelsius } from "./utils/convertKelvinToCelsius";
+import WeatherIcon from "./components/WeatherIcon";
+
+interface WeatherDetail {
+  dt: number;
+  main: {
+    temp: number;
+    feels_like: number;
+    temp_min: number;
+    temp_max: number;
+    pressure: number;
+    sea_level: number;
+    grnd_level: number;
+    humidity: number;
+    temp_kf: number;
+  };
+  weather: {
+    id: number;
+    main: string;
+    description: string;
+    icon: string;
+  }[];
+  clouds: {
+    all: number;
+  };
+  wind: {
+    speed: number;
+    deg: number;
+    gust: number;
+  };
+  visibility: number;
+  pop: number;
+  sys: {
+    pod: string;
+  };
+  dt_txt: string;
+}
+
+interface WeatherData {
+  cod: string;
+  message: number;
+  cnt: number;
+  list: WeatherDetail[];
+  city: {
+    id: number;
+    name: string;
+    coord: {
+      lat: number;
+      lon: number;
+    };
+    country: string;
+    population: number;
+    timezone: number;
+    sunrise: number;
+    sunset: number;
+  };
+}
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const { isLoading, error, data, refetch } = useQuery<WeatherData>(
+    "repoData",
+    async () => {
+      const { data } = await axios.get(
+        "https://api.openweathermap.org/data/2.5/forecast?q=moratuwa&appid=2ed6c5b01b99848abe0c7c27653f260c&cnt=56"
+      );
+      return data;
+    }
+  );
+  const firstData = data?.list[0];
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
+  console.log("data", data);
+
+  if (isLoading) return "Loading...";
+
+  if (error) return "An error occurred";
+
+  return (
+    <div className="flex flex-col gap-4 bg-gray-100 min-h-screen">
+      <Navbar />
+      <main className="px-3 max-w-7xl mx-auto flex flex-col gap-9 w-full pb-10 pt-4">
+        {/* Today's data */}
+        <section>
+        <div className="space-y-2">
+                <h2 className="flex gap-1 text-2xl  items-end ">
+                  <p>{format(parseISO(firstData?.dt_txt ?? ""), "EEEE")}</p>
+                  <p className="text-lg">
+                    ({format(parseISO(firstData?.dt_txt ?? ""), "dd.MM.yyyy")})
+                  </p>
+                </h2>
+                <Container className=" gap-10 px-6 items-center">
+                    {/* temprature */}
+                  <div className=" flex flex-col px-4 ">
+                    <span className="text-5xl">
+                      {convertKelvinToCelsius(firstData?.main.temp ?? 296.37)}°
+                    </span>
+                    <p className="text-xs space-x-1 whitespace-nowrap">
+                      <span> Feels like</span>
+                      <span>
+                        {convertKelvinToCelsius(
+                          firstData?.main.feels_like ?? 0
+                        )}
+                        °
+                      </span>
+                    </p>
+                    <p className="text-xs space-x-2">
+                      <span>
+                        {convertKelvinToCelsius(firstData?.main.temp_min ?? 0)}
+                        °↓{" "}
+                      </span>
+                      <span>
+                        {" "}
+                        {convertKelvinToCelsius(firstData?.main.temp_max ?? 0)}
+                        °↑
+                      </span>
+                    </p>
+                  </div>
+                   {/* time  and weather  icon */}
+                   <div className="flex gap-10 sm:gap-16 overflow-x-auto w-full justify-between pr-3">
+                    {data?.list.map((d, i) => (
+                      <div
+                        key={i}
+                        className="flex flex-col justify-between gap-2 items-center text-xs font-semibold "
+                      >
+                        <p className="whitespace-nowrap">
+                          {format(parseISO(d.dt_txt), "h:mm a")}
+                        </p>
+
+                        {/* <WeatherIcon iconName={d.weather[0].icon} /> */}
+                        <WeatherIcon
+                          iconName={d.weather[0].icon}
+                        />
+                        <p>{convertKelvinToCelsius(d?.main.temp ?? 0)}°</p>
+                      </div>
+                    ))}
+                  </div>
+
+                </Container>
+          </div>
+        </section>
+
+        {/* 7 days data */}
+        <section></section>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
     </div>
   );
 }
