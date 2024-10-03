@@ -71,8 +71,8 @@ interface WeatherData {
 }
 
 export default function Home() {
-  const[place]=useAtom(placeAtom)
-  const [loadingCity] = useAtom(loadingCityAtom);
+  const[place,setPlace]=useAtom(placeAtom)
+  const [loadingCity, setLoadingCity] = useAtom(loadingCityAtom);
 
   const { isLoading, error, data, refetch } = useQuery<WeatherData>(
     "repoData",
@@ -106,7 +106,6 @@ export default function Home() {
       return entryDate === date && entryTime >= 6;
     });
   });
-
   
   if (isLoading)
     return (
