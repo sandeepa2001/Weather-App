@@ -23,6 +23,10 @@ export default function Navbar({ location }: Props) {
   const [,setPlace] = useAtom(placeAtom);
   const [ ,setLoadingCity] = useAtom(loadingCityAtom);
 
+
+  interface city {
+    name: string;
+  }
   async function handleInputChang(value: string) {
     setCity(value);
     if (value.length >= 3) {
