@@ -1,7 +1,5 @@
 "use client";
-import Image from "next/image";
 import Navbar from "./components/Navbar";
-import { useQuery } from "react-query";
 import axios from "axios";
 import { format, fromUnixTime, parseISO } from "date-fns"; // Import format from date-fns
 import { convertKelvinToCelsius } from "./utils/convertKelvinToCelsius";
@@ -15,7 +13,7 @@ import ForecastWeatherDetail from "./components/ForecastWeatherDeatail";
 import { useAtom } from "jotai";
 import { loadingCityAtom, placeAtom } from "./atom";
 import { useEffect } from "react";
-import { getWeatherBackground } from "./components/background";
+import { useQuery } from "react-query";
 
 interface WeatherDetail {
   dt: number;
@@ -73,8 +71,8 @@ interface WeatherData {
 }
 
 export default function Home() {
-  const[place,setPlace]=useAtom(placeAtom)
-  const [loadingCity, setLoadingCity] = useAtom(loadingCityAtom);
+  const[place]=useAtom(placeAtom)
+  const [loadingCity] = useAtom(loadingCityAtom);
 
   const { isLoading, error, data, refetch } = useQuery<WeatherData>(
     "repoData",
@@ -109,8 +107,6 @@ export default function Home() {
     });
   });
 
-
-  const weatherBackground = getWeatherBackground(firstData?.weather[0]?.main);
   
   if (isLoading)
     return (
