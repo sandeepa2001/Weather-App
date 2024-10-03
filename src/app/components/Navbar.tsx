@@ -35,7 +35,7 @@ export default function Navbar({ location }: Props) {
           `https://api.openweathermap.org/data/2.5/find?q=${value}&appid=a525870b8321a6413fbabd33adec5dd7`
         );
 
-        const suggestions = response.data.list.map((item: any) => item.name);
+        const suggestions = response.data.list.map((item: city) => item.name);
         setSuggestions(suggestions);
         setError("");
         setShowSuggestions(true);
