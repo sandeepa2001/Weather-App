@@ -8,12 +8,12 @@ import Container from "./components/Container";
 import { getDayOrNightIcon } from "./utils/getDayOrNightIcon";
 import { metersToKilometers } from "./utils/metersToKilometers";
 import WeatherDetails from "./components/WeatherDetails";
-import { convertWindSpeed } from "./utils/‎convertWindSpeed";
 import ForecastWeatherDetail from "./components/ForecastWeatherDeatail";
 import { useAtom } from "jotai";
 import { loadingCityAtom, placeAtom } from "./atom";
 import { useEffect } from "react";
 import { useQuery } from "react-query";
+import { convertWindSpeed } from "./utils/‎convertWindSpeed";
 
 interface WeatherDetail {
   dt: number;
@@ -119,7 +119,7 @@ export default function Home() {
     return (
       <div className="flex items-center min-h-screen justify-center">
         {/* @ts-ignore */}
-        <p className="text-red-400">{error.message}</p>
+        <p className="text-red-400">{(error as any).message}</p>
       </div>
     );
 
