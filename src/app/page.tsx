@@ -118,8 +118,9 @@ export default function Home() {
   if (error)
     return (
       <div className="flex items-center min-h-screen justify-center">
-        {/* @ts-ignore */}
-        <p className="text-red-400">{(error as any).message}</p>
+        {/* ts-expect-error */}
+      <p className="text-red-400">{(error as any).message}</p>
+
       </div>
     );
 
