@@ -40,6 +40,7 @@ export default function Navbar({ location }: Props) {
         setError("");
         setShowSuggestions(true);
       } catch (error) {
+        console.error("Error fetching suggestions:", error);
         setSuggestions([]);
         setShowSuggestions(false);
       }
@@ -84,6 +85,7 @@ export default function Navbar({ location }: Props) {
             setPlace(response.data.name);
           }, 500);
         } catch (error) {
+          console.error("Error fetching current location weather:", error);
           setLoadingCity(false);
         }
       });
