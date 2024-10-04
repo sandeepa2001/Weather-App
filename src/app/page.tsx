@@ -119,8 +119,6 @@ export default function Home() {
     return (
       <div className="flex items-center min-h-screen justify-center">
        <p className="text-red-400">{(error instanceof Error ? error.message : "An error occurred")}</p>
-
-
       </div>
     );
 
