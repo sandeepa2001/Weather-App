@@ -108,7 +108,6 @@ export default function Home() {
       return entryDate === date && entryTime >= 6;
     });
   });
-  
   if (isLoading)
     return (
       <div className="flex items-center min-h-screen justify-center">
