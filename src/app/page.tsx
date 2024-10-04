@@ -1,7 +1,5 @@
 "use client";
-import Image from "next/image";
 import Navbar from "./components/Navbar";
-import { useQuery } from "react-query";
 import axios from "axios";
 import { format, fromUnixTime, parseISO } from "date-fns"; // Import format from date-fns
 import { convertKelvinToCelsius } from "./utils/convertKelvinToCelsius";
@@ -10,12 +8,12 @@ import Container from "./components/Container";
 import { getDayOrNightIcon } from "./utils/getDayOrNightIcon";
 import { metersToKilometers } from "./utils/metersToKilometers";
 import WeatherDetails from "./components/WeatherDetails";
-import { convertWindSpeed } from "./utils/‎convertWindSpeed";
 import ForecastWeatherDetail from "./components/ForecastWeatherDeatail";
 import { useAtom } from "jotai";
 import { loadingCityAtom, placeAtom } from "./atom";
 import { useEffect } from "react";
-import { getWeatherBackground } from "./components/background";
+import { useQuery } from "react-query";
+import { convertWindSpeed } from "./utils/‎convertWindSpeed";
 
 interface WeatherDetail {
   dt: number;
@@ -52,6 +50,8 @@ interface WeatherDetail {
   dt_txt: string;
 }
 
+
+
 interface WeatherData {
   cod: string;
   message: number;
@@ -73,8 +73,8 @@ interface WeatherData {
 }
 
 export default function Home() {
-  const[place,setPlace]=useAtom(placeAtom)
-  const [loadingCity, setLoadingCity] = useAtom(loadingCityAtom);
+  const[place,]=useAtom(placeAtom)
+  const [loadingCity, ] = useAtom(loadingCityAtom);
 
   const { isLoading, error, data, refetch } = useQuery<WeatherData>(
     "repoData",
@@ -108,10 +108,6 @@ export default function Home() {
       return entryDate === date && entryTime >= 6;
     });
   });
-
-
-  const weatherBackground = getWeatherBackground(firstData?.weather[0]?.main);
-  
   if (isLoading)
     return (
       <div className="flex items-center min-h-screen justify-center">
@@ -121,8 +117,7 @@ export default function Home() {
   if (error)
     return (
       <div className="flex items-center min-h-screen justify-center">
-        {/* @ts-ignore */}
-        <p className="text-red-400">{error.message}</p>
+       <p className="text-red-400">{(error instanceof Error ? error.message : "An error occurred")}</p>
       </div>
     );
 

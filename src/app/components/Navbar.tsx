@@ -20,9 +20,13 @@ export default function Navbar({ location }: Props) {
   //
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [place, setPlace] = useAtom(placeAtom);
-  const [_, setLoadingCity] = useAtom(loadingCityAtom);
+  const [,setPlace] = useAtom(placeAtom);
+  const [ ,setLoadingCity] = useAtom(loadingCityAtom);
 
+
+  interface city {
+    name: string;
+  }
   async function handleInputChang(value: string) {
     setCity(value);
     if (value.length >= 3) {
@@ -31,11 +35,12 @@ export default function Navbar({ location }: Props) {
           `https://api.openweathermap.org/data/2.5/find?q=${value}&appid=a525870b8321a6413fbabd33adec5dd7`
         );
 
-        const suggestions = response.data.list.map((item: any) => item.name);
+        const suggestions = response.data.list.map((item: city) => item.name);
         setSuggestions(suggestions);
         setError("");
         setShowSuggestions(true);
       } catch (error) {
+        console.error("Error fetching suggestions:", error);
         setSuggestions([]);
         setShowSuggestions(false);
       }
@@ -80,6 +85,7 @@ export default function Navbar({ location }: Props) {
             setPlace(response.data.name);
           }, 500);
         } catch (error) {
+          console.error("Error fetching current location weather:", error);
           setLoadingCity(false);
         }
       });
