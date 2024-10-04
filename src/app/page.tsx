@@ -50,6 +50,8 @@ interface WeatherDetail {
   dt_txt: string;
 }
 
+
+
 interface WeatherData {
   cod: string;
   message: number;
